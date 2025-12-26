@@ -13,6 +13,9 @@ create or alter table vacation_spots (
   , avg_cloud_cover_pct float
   , precipitation_probability_pct float
   -- STEP 5: INSERT CHANGES HERE
+  , aquarium_cnt int
+  , zoo_cnt int
+  , korean_restaurant_cnt int
 ) data_retention_time_in_days = 1;
 
 
@@ -25,6 +28,7 @@ create or alter task vacation_spots_update
     select *
     from silver.flights_from_home flight
     join silver.weather_joined_with_major_cities city on city.geo_name = flight.arrival_city
+    join silver.attractions att on att.geo_name = city.geo_name
     -- STEP 5: INSERT CHANGES HERE
   ) as harmonized_vacation_spots ON vacation_spots.city = harmonized_vacation_spots.arrival_city and vacation_spots.airport = harmonized_vacation_spots.arrival_airport
   WHEN MATCHED THEN
@@ -36,6 +40,10 @@ create or alter task vacation_spots_update
       , vacation_spots.avg_cloud_cover_pct = harmonized_vacation_spots.avg_cloud_cover_pct
       , vacation_spots.precipitation_probability_pct = harmonized_vacation_spots.precipitation_probability_pct
       -- STEP 5: INSERT CHANGES HERE
+      , vacation_spots.aquarium_cnt = harmonized_vacation_spots.aquarium_cnt
+      , vacation_spots.zoo_cnt = harmonized_vacation_spots.zoo_cnt
+      , vacation_spots.korean_restaurant_cnt = harmonized_vacation_spots.korean_restaurant_cnt
+
   WHEN NOT MATCHED THEN 
     INSERT VALUES (
         harmonized_vacation_spots.arrival_city
@@ -47,6 +55,10 @@ create or alter task vacation_spots_update
       , harmonized_vacation_spots.avg_cloud_cover_pct
       , harmonized_vacation_spots.precipitation_probability_pct
       -- STEP 5: INSERT CHANGES HERE
+      , harmonized_vacation_spots.aquarium_cnt
+      , harmonized_vacation_spots.zoo_cnt
+      , harmonized_vacation_spots.korean_restaurant_cnt
+
     );
 
 
@@ -61,8 +73,9 @@ create or alter task email_notification
         select to_varchar(array_agg(object_construct(*)))
         from vacation_spots
         where true
-          and punctual_pct >= 50
-          and avg_temperature_air_f >= 70
+         and korean_restaurant_cnt > 0
+          and (zoo_cnt > 0 or aquarium_cnt > 0)
+
           -- STEP 5: INSERT CHANGES HERE
         limit 10);
 
@@ -70,7 +83,7 @@ create or alter task email_notification
       if (:options = '[]') then
         CALL SYSTEM$SEND_EMAIL(
             'email_integration',
-            '<insert your email here>', -- INSERT YOUR EMAIL HERE
+            'naveen.surada@donaldson.com', -- INSERT YOUR EMAIL HERE
             'New data successfully processed: No suitable vacation spots found.',
             'The query did not return any results. Consider adjusting your filters.');
       end if;
@@ -83,14 +96,14 @@ create or alter task email_notification
 
       CALL SYSTEM$SEND_EMAIL(
         'email_integration',
-        '<insert your email here>', -- INSERT YOUR EMAIL HERE
+        'naveen.surada@donaldson.com', -- INSERT YOUR EMAIL HERE
         'New data successfully processed: The perfect place for your summer vacation has been found.',
         :response);
     exception
         when EXPRESSION_ERROR then
             CALL SYSTEM$SEND_EMAIL(
             'email_integration',
-            '<insert your email here>', -- INSERT YOUR EMAIL HERE
+            'naveen.surada@donaldson.com', -- INSERT YOUR EMAIL HERE
             'New data successfully processed: Cortex LLM function inaccessible.',
             'It appears that the Cortex LLM functions are not available in your region');
     end;
