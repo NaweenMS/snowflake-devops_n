@@ -236,7 +236,14 @@ pipeline = [
 
 
 # entry point for PythonAPI
-root = Root(Session.builder.getOrCreate())
+session = Session.builder.create()      # reads env vars
+Session.set_active_session(session)
+#root = Root(Session.builder.getOrCreate())
+
+
+
+root = Root(session)
+
 
 # create views in Snowflake
 silver_schema = root.databases["quickstart_prod"].schemas["silver"]
