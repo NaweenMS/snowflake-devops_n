@@ -1,6 +1,6 @@
 
 use role accountadmin;
-use schema quickstart_prod.silver;
+use schema quickstart_{{environment}}.silver;
 
 
 CREATE OR REPLACE FUNCTION get_city_for_airport(iata VARCHAR)
