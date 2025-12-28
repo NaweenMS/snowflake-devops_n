@@ -12,7 +12,7 @@ create or alter table vacation_spots (
   , avg_relative_humidity_pct float
   , avg_cloud_cover_pct float
   , precipitation_probability_pct float
-  -- STEP 5: INSERT CHANGES HERE
+  -- STEP 5: INSERT CHANGES HERE FOR NEW FILEDS
   , aquarium_cnt int
   , zoo_cnt int
   , korean_restaurant_cnt int
