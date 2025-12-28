@@ -43,5 +43,5 @@ CREATE OR REPLACE FILE FORMAT bronze.json_format TYPE = 'json';
 CREATE OR ALTER STAGE bronze.raw;
 
 
--- Copy file from GitHub to internal stage
+-- Copy file from GitHub to internal stage update
 copy files into @bronze.raw from @quickstart_common.public.quickstart_repo/branches/main/data/airport_list.json;
