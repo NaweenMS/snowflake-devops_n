@@ -16,6 +16,7 @@ create or alter table vacation_spots (
   , aquarium_cnt int
   , zoo_cnt int
   , korean_restaurant_cnt int
+  ,W_INSERT_DT TIMESTAMP_NTZ(9) DEFAULT (CURRENT_TIMESTAMP())
 ) data_retention_time_in_days = {{retention_time}};
 
 
