@@ -1,7 +1,7 @@
 use role accountadmin;
 use schema quickstart_{{environment}}.gold;
 
-
+--Adding comment to push
 -- declarative target table of pipeline
 create or alter table vacation_spots (
     city varchar
