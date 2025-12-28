@@ -16,8 +16,8 @@ create or alter table vacation_spots (
   , aquarium_cnt int
   , zoo_cnt int
   , korean_restaurant_cnt int
-  ,W_INSERT_DT TIMESTAMP_NTZ(9) DEFAULT (CURRENT_TIMESTAMP()) --added for tetsing 
-) data_retention_time_in_days = {{retention_time}};
+  ,W_INSERT_DT TIMESTAMP_NTZ(9)
+  ) data_retention_time_in_days = {{retention_time}};
 
 
 -- task to merge pipeline results into target table
@@ -44,6 +44,7 @@ create or alter task vacation_spots_update
       , vacation_spots.aquarium_cnt = harmonized_vacation_spots.aquarium_cnt
       , vacation_spots.zoo_cnt = harmonized_vacation_spots.zoo_cnt
       , vacation_spots.korean_restaurant_cnt = harmonized_vacation_spots.korean_restaurant_cnt
+      ,vacation_spots.W_INSERT_DT=CURRENT_TIMESTAMP()
 
   WHEN NOT MATCHED THEN 
     INSERT VALUES (
@@ -59,6 +60,7 @@ create or alter task vacation_spots_update
       , harmonized_vacation_spots.aquarium_cnt
       , harmonized_vacation_spots.zoo_cnt
       , harmonized_vacation_spots.korean_restaurant_cnt
+      ,CURRENT_TIMESTAMP()
 
     );
 
