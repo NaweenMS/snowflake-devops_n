@@ -47,6 +47,8 @@ jobs:
 
       # Deploy pipeline with branch specific parameters
       - name: Deploy data pipeline to ${{ github.ref_name }}
+        env:
+          PRIVATE_KEY_PASSPHRASE: ${{ secrets.PRIVATE_KEY_PASSPHRASE }}
         run: |
           BRANCH_NAME=${{ github.ref_name }}
           if [ "${BRANCH_NAME}" == "main" ]; then
